@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Нескінченне відео з F11</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+    }
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      z-index: 10;
+      background-color: transparent;
+      border: 2px solid white;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="initVideo()">🎬 Старт</button>
+
+  <video id="video" autoplay loop muted>
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+    Ваш браузер не підтримує відео.
+  </video>
+
+  <script>
+    const video = document.getElementById('video');
+    let pauseAllowed = true;
+
+    function initVideo() {
+      // Увімкнути звук та програти відео
+      video.muted = false;
+      video.volume = 0.2;
+      video.play();
+
+      // Перехід у повноекранний режим
+      enterFullscreen();
+
+      // Сховати кнопку
+      document.querySelector('button').style.display = 'none';
+
+      // Заборонити паузу (автовідновлення)
+      video.addEventListener('pause', () => {
+        if (!pauseAllowed) {
+          video.play();
+        }
+      });
+
+      // Блокуємо контекстне меню
+      window.addEventListener("contextmenu", e => e.preventDefault());
+    }
+
+    // Функція для переходу в повноекранний режим
+    function enterFullscreen() {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) { 
+        document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      }
+    }
+
+    // Обробка натискань клавіш
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+
+      if (key === "g") {
+        e.preventDefault();
+        pauseAllowed = true;
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      } else if (key === " ") {
+        e.preventDefault();
+        video.volume = Math.min(1.0, video.volume + 0.1);
+        console.log("Гучність:", video.volume.toFixed(2));
+      }
+    });
+
+    // Обробка натискань на будь-яке місце на екрані
+    document.body.addEventListener('click', () => {
+      enterFullscreen(); // Перехід в повноекранний режим при натисканні
+    });
+  </script>
+
+</body>
+</html>
