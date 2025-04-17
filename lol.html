@@ -43,13 +43,14 @@
   <button onclick="initVideo()">🎬 Старт</button>
 
   <video id="video" autoplay loop muted>
-    <source src="cds0032_trailer.mp4" type="video/mp4">
+    <source src="media/cds0032_trailer.mp4" type="video/mp4">
     Ваш браузер не підтримує відео.
   </video>
 
   <script>
     const video = document.getElementById('video');
     let pauseAllowed = true;
+    let exitDisabledUntil = null;
 
     function initVideo() {
       // Увімкнути звук та програти відео
@@ -60,8 +61,8 @@
       // Перехід у повноекранний режим
       enterFullscreen();
 
-      // Сховати кнопку
-      document.querySelector('button').style.display = 'none';
+      // Сховати кнопку старту
+      document.querySelector("button").style.display = "none";
 
       // Заборонити паузу (автовідновлення)
       video.addEventListener('pause', () => {
@@ -108,6 +109,25 @@
     document.body.addEventListener('click', () => {
       enterFullscreen(); // Перехід в повноекранний режим при натисканні
     });
+
+    // Функція для блокування виходу зі сторінки
+    function showExitWarning(e) {
+      if (exitDisabledUntil && Date.now() < exitDisabledUntil) {
+        e.preventDefault();  // Блокуємо вихід
+        e.returnValue = ''; // Це необхідно для підтримки старих браузерів
+      }
+    }
+
+    // Встановлюємо, що сайт не дасть вийти протягом 10 хвилин (600000 мс)
+    function disableExitFor10Minutes() {
+      exitDisabledUntil = Date.now() + 600000; // 10 хвилин
+    }
+
+    // Запускаємо таймер після 10 хвилин
+    disableExitFor10Minutes();
+
+    // Перехоплення спроби вийти зі сторінки
+    window.addEventListener('beforeunload', showExitWarning);
   </script>
 
 </body>
